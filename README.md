@@ -1,6 +1,6 @@
 # qiime2_test
 qiime2_test
-######################################################### data processing ########################################################
+
 # Importing data:Multiplexed single-end FASTQ with barcodes in sequence
 qiime tools import \
   --type MultiplexedSingleEndBarcodeInSequence \
@@ -55,7 +55,7 @@ qiime metadata tabulate \
   --m-input-file stats-3.qza \
   --o-visualization stats-3.qzv
 
-######################################################### merge data ########################################################
+
 # merge feature-table
 qiime feature-table merge \
   --i-tables table-1.qza \
@@ -82,7 +82,7 @@ qiime feature-table tabulate-seqs \
 --i-data rep-seqs.qza \
 --o-visualization rep_seqs.qzv
 
-######################################################### data filtering ########################################################
+
 # Filter features that only appear in a single sample
 qiime feature-table filter-features \
 --i-table table.qza \
@@ -105,8 +105,8 @@ qiime feature-table summarize \
   --o-visualization table2.qzv 
   
   
-######################################################### Taxonomic analysis ########################################################
-###########Taxonomic analysis---SILVA_132_QIIME_release#########
+
+#axonomic analysis---SILVA_132_QIIME_release
 mkdir taxonomy
 cd taxonomy
 
@@ -184,7 +184,7 @@ qiime taxa barplot \
   --o-visualization taxonomy/taxabarplots_table2.qzv
 
 
-############# Taxonomic analysis---gg-13-8-99-515-806-nb-classifier ############
+#Taxonomic analysis---gg-13-8-99-515-806-nb-classifier
 qiime feature-classifier classify-sklearn \
   --i-classifier gg-13-8-99-515-806-nb-classifier.qza \
   --i-reads rep-seqs.qza \
@@ -209,9 +209,9 @@ qiime taxa barplot \
 
 
 
-################################################### Alpha and beta diversity analysis ##################################################
-cd phylogenetictree
+
 # Generate a tree for phylogenetic diversity analyses
+cd phylogenetictree
 qiime phylogeny align-to-tree-mafft-fasttree \
   --p-n-threads 16 \
   --i-sequences rep-seqs.qza \
@@ -280,7 +280,7 @@ qiime diversity beta-group-significance \
   --p-pairwise
 
 
-#emperor
+# emperor
 qiime emperor plot \
   --i-pcoa core-metrics-results-table2/unweighted_unifrac_pcoa_results.qza \
   --m-metadata-file merge_map.txt \
@@ -310,8 +310,7 @@ qiime diversity alpha-rarefaction \
   --o-visualization alpha-rarefaction-table2-51000.qzv
 
 
-######################################################### abundance analysis ########################################################
-############abundance analysis---ANCOM##########
+# abundance analysis---ANCOM
 mkdir ANCOM
 # Collapse table at genus level
 nohup qiime taxa collapse \
@@ -410,7 +409,7 @@ qiime composition ancom \
   --o-visualization ANCOM/l6-ancom-D-Description.qzv
 
 
-############ abundance analysis---gneiss ##########
+# abundance analysis---gneiss
 mkdir gneiss
 # Also check remaining read counts
 qiime feature-table summarize \
@@ -453,7 +452,7 @@ qiime gneiss dendrogram-heatmap \
   --p-color-map seismic \
   --o-visualization gneiss/heatmap.qzv
 
-### plot a boxplot and identify taxa that could be explaining the differences between the D and ND groups.
+# plot a boxplot and identify taxa that could be explaining the differences between the D and ND groups.
 nohup qiime gneiss balance-taxonomy \
   --i-table table2.qza \
   --i-tree gneiss/hierarchy.qza \
@@ -475,7 +474,7 @@ nohup qiime gneiss balance-taxonomy \
    --o-visualization gneiss/y0_taxa_summary_lv6.qzv
 
 
-######################################################### data extraction ########################################################
+# data extraction 
 qiime tools extract \
 --input-path rooted_tree.qza \
 --output-path rooted_tree
@@ -488,7 +487,7 @@ qiime tools extract \
 --input-path table.qza \
 --output-path table
 
-######################################################### data conversion  ########################################################
+# data conversion  
 biom convert \
 -i table2/9c40c08e-45c1-405c-bc41-27c3e05025c5/data/feature-table.biom \
 -o table2/out_table.tsv \
@@ -496,7 +495,7 @@ biom convert \
 
 biom convert -h
 
-######################################################### small tips  ########################################################
+# small tips 
 # Count the number of sequences in a FASTQ file
 grep -n filename.fastq
 
