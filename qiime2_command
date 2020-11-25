@@ -1,10 +1,50 @@
+######################################################### reference ########################################################
+https://docs.qiime2.org/2020.8/tutorials/moving-pictures/
+https://docs.qiime2.org/2020.8/plugins/
+https://docs.qiime2.org/2020.8/tutorials/importing/
+https://docs.qiime2.org/2020.8/tutorials/fmt/?highlight=merge%20data
+https://docs.qiime2.org/2019.7/tutorials/overview/#demultiplexing
+https://docs.qiime2.org/2020.8/tutorials/moving-pictures/#moving-pics-diversity
+https://rachaellappan.github.io/16S-analysis/pre-processing-reads.html
+https://github.com/mikerobeson/make_SILVA_db
+https://github.com/lokeshbio/Amplicon_course/blob/master/Qiime2_pipeline.md#emp-format
 
-# Importing the multiplexed sequence data
+cutadapt
+https://cutadapt.readthedocs.io/en/stable/guide.html#multiple-adapters
+https://forum.qiime2.org/t/demultiplexing-and-trimming-adapters-from-reads-with-q2-cutadapt/2313
+https://www.jianshu.com/p/9451bab60e47
+
+qiime2 forum Q&A
+https://forum.qiime2.org/t/dada2-truncation-lengths-and-features-number/1940
+https://docs.qiime2.org/2020.8/tutorials/read-joining/
+https://forum.qiime2.org/t/trimming-joined-reads-with-cutadapt/16621/2
+https://forum.qiime2.org/t/importing-joined-data-from-manifest-for-ion-torrent/3626
+https://forum.qiime2.org/t/cutadapt-to-split-multiple-regions-per-sample/15021/2
+https://forum.qiime2.org/t/demultiplexing-paired-end-barcode/8205
+https://forum.qiime2.org/t/very-low-denoising-stats-from-dada2-using-ion-torrent-data/14206
+https://forum.qiime2.org/t/processing-filtering-and-evaluating-the-silva-database-and-other-reference-sequence-data-with-rescript/15494
+https://forum.qiime2.org/t/demultiplexing-and-trimming-adapters-from-reads-with-q2-cutadapt/2313
+https://forum.qiime2.org/t/confused-about-p-trunc-len-f-and-p-trunc-len-r/8583/2
+https://forum.qiime2.org/t/iontorrent-single-ends-sequences-dada2/2870/3
+
+
+Chinese tutorial
+https://forum.qiime2.org/t/qiime-2-3-2018-11/7599
+https://zhuanlan.zhihu.com/p/93186419
+https://blog.csdn.net/woodcorpse/article/details/76944391?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param
+https://blog.csdn.net/woodcorpse/article/details/85254262
+https://blog.csdn.net/woodcorpse/article/details/106435898?utm_medium=distribute.pc_aggpage_search_result.none-task-blog-2~all~top_click~default-1-106435898.nonecase&utm_term=16s&spm=1000.2123.3001.4430
+https://blog.csdn.net/woodcorpse/article/details/76599324?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-2.channel_param&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-2.channel_param
+https://blog.csdn.net/woodcorpse/article/details/76696292
+https://www.jianshu.com/p/9451bab60e47
+
+
+######################################################### data processing ########################################################
+# Importing data:Multiplexed single-end FASTQ with barcodes in sequence
 qiime tools import \
   --type MultiplexedSingleEndBarcodeInSequence \
   --input-path PGM20161121.fastq.gz \
   --output-path multiplexed-seqs-3.qza
-
 
 
 # Demultiplex the reads
@@ -54,7 +94,7 @@ qiime metadata tabulate \
   --m-input-file stats-3.qza \
   --o-visualization stats-3.qzv
 
-
+######################################################### merge data ########################################################
 # merge feature-table
 qiime feature-table merge \
   --i-tables table-1.qza \
@@ -81,7 +121,7 @@ qiime feature-table tabulate-seqs \
 --i-data rep-seqs.qza \
 --o-visualization rep_seqs.qzv
 
-
+######################################################### data filtering ########################################################
 # Filter features that only appear in a single sample
 qiime feature-table filter-features \
 --i-table table.qza \
@@ -99,13 +139,13 @@ qiime feature-table filter-features \
 --p-min-frequency 10 \
 --o-filtered-table table2.qza
 
-
 qiime feature-table summarize \
   --i-table table2.qza \
   --o-visualization table2.qzv 
-
-
-#Taxonomic analysis---SILVA_132_QIIME_release
+  
+  
+######################################################### Taxonomic analysis ########################################################
+###########Taxonomic analysis---SILVA_132_QIIME_release#########
 mkdir taxonomy
 cd taxonomy
 
@@ -183,9 +223,7 @@ qiime taxa barplot \
   --o-visualization taxonomy/taxabarplots_table2.qzv
 
 
-
-
-# Taxonomic analysis---gg-13-8-99-515-806-nb-classifier
+############# Taxonomic analysis---gg-13-8-99-515-806-nb-classifier ############
 qiime feature-classifier classify-sklearn \
   --i-classifier gg-13-8-99-515-806-nb-classifier.qza \
   --i-reads rep-seqs.qza \
@@ -210,7 +248,7 @@ qiime taxa barplot \
 
 
 
-# Create a phylogenetic tree
+################################################### Alpha and beta diversity analysis ##################################################
 cd phylogenetictree
 # Generate a tree for phylogenetic diversity analyses
 qiime phylogeny align-to-tree-mafft-fasttree \
@@ -311,10 +349,9 @@ qiime diversity alpha-rarefaction \
   --o-visualization alpha-rarefaction-table2-51000.qzv
 
 
-
-#abundance analysis---ANCOM
+######################################################### abundance analysis ########################################################
+############abundance analysis---ANCOM##########
 mkdir ANCOM
-
 # Collapse table at genus level
 nohup qiime taxa collapse \
 --i-table table2.qza \
@@ -323,7 +360,6 @@ nohup qiime taxa collapse \
 --o-collapsed-table ANCOM/feature_table_for_ANCOM.qza
 
 cd ANCOM
-
 # Add pseudocount
 qiime composition add-pseudocount \
 --i-table feature_table_for_ANCOM.qza \
@@ -341,7 +377,6 @@ nohup qiime composition ancom \
 --m-metadata-file merge_map.txt \
 --m-metadata-column Description \
 --o-visualization ancom_Description_results.qzv 
-
 
 
 # Differential abundance testing with ANCOM --- ND
@@ -414,39 +449,8 @@ qiime composition ancom \
   --o-visualization ANCOM/l6-ancom-D-Description.qzv
 
 
-
-
-
-
-
-
-# Filter features that only appear in a single sample
-qiime feature-table filter-features \
---i-table table.qza \
---p-min-samples 2 \
---o-filtered-table table1.qza
-
-qiime feature-table summarize \
-  --i-table table1.qza \
-  --o-visualization table1.qzv 
-
-
-# Filter features by reads that appears 10 times or fewer across all samples
-qiime feature-table filter-features \
---i-table table1.qza \
---p-min-frequency 10 \
---o-filtered-table table2.qza
-
-
-qiime feature-table summarize \
-  --i-table table2.qza \
-  --o-visualization table2.qzv 
-
-
-
-#creat a directory
+############ abundance analysis---gneiss ##########
 mkdir gneiss
-
 # Also check remaining read counts
 qiime feature-table summarize \
 --i-table table2.qza \
@@ -479,8 +483,6 @@ qiime gneiss ols-regression \
   --m-metadata-file merge_map.txt \
   --o-visualization gneiss/regression_summary_Description.qzv
 
-
-
 #visualize these balances on a heatmap
 qiime gneiss dendrogram-heatmap \
   --i-table table2.qza \
@@ -490,7 +492,7 @@ qiime gneiss dendrogram-heatmap \
   --p-color-map seismic \
   --o-visualization gneiss/heatmap.qzv
 
-### plot a boxplot and identify taxa that could be explaining the differences between the control and patient groups.
+### plot a boxplot and identify taxa that could be explaining the differences between the D and ND groups.
 nohup qiime gneiss balance-taxonomy \
   --i-table table2.qza \
   --i-tree gneiss/hierarchy.qza \
@@ -512,29 +514,55 @@ nohup qiime gneiss balance-taxonomy \
    --o-visualization gneiss/y0_taxa_summary_lv6.qzv
 
 
-
+######################################################### data extraction ########################################################
 qiime tools extract \
 --input-path rooted_tree.qza \
 --output-path rooted_tree
-
-
 
 qiime tools extract \
 --input-path classified_rep_seqs-233.qza \
 --output-path classified_rep_seqs-233
 
-
-
 qiime tools extract \
 --input-path table.qza \
 --output-path table
 
+######################################################### data conversion  ########################################################
+biom convert \
+-i table2/9c40c08e-45c1-405c-bc41-27c3e05025c5/data/feature-table.biom \
+-o table2/out_table.tsv \
+--to-tsv
 
+biom convert -h
 
+######################################################### small tips  ########################################################
+# Count the number of sequences in a FASTQ file
+grep -n filename.fastq
 
+# Count the total number of rows in a file that contain primers
+grep -c ‘primer/barcode/adapter/’ filename.fastq
 
+# Count the total number of rows in a file
+wc -l filename.fastq
 
+# compress file
+gzip filename
+gzip -c filename
 
+# unzip file
+gzip -d filename
+gunzip filename
+
+# check .fastq file
+less -S -N filename.fastq
+zless -S -N filename.fastq.gz
+
+cat -n filename.fastq
+zcat -n filename.fastq.gz
+zcat filename.fastq.gz | head -n 10
+
+head -n filename.fastq
+tail -n filename.fastq
 
 
 
