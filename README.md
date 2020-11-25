@@ -1,6 +1,7 @@
 
 # data processing
 #Multiplexed single-end FASTQ with barcodes in sequence
+
 qiime tools import \
   --type MultiplexedSingleEndBarcodeInSequence \
   --input-path PGM20161121.fastq.gz \
@@ -8,6 +9,7 @@ qiime tools import \
 
 
 #Demultiplex the reads
+
 qiime cutadapt demux-single \
   --i-seqs multiplexed-seqs-3.qza \
   --m-barcodes-file human_oral_3_m_map.txt \
@@ -18,12 +20,14 @@ qiime cutadapt demux-single \
   --verbose
 
 #visualizating trimmed-seqs.qza
+
 qiime demux summarize \
   --i-data demultiplexed-seqs-3.qza \
   --o-visualization demultiplexed-seqs-3.qzv
 
 
 #Trim adapters+primers from demulitiplexed reads
+
 nohup qiime cutadapt trim-single \
   --i-demultiplexed-sequences demultiplexed-seqs-3.qza \
   --p-front GATGTGCCAGCMGCCGCGGTAA \
@@ -34,12 +38,14 @@ nohup qiime cutadapt trim-single \
 
 
 #visualizating trimmed-seqs.qza
+
 qiime demux summarize \
   --i-data trimmed-seqs-3.qza \
   --o-visualization trimmed-seqs-3.qzv
 
 
 #Sequence quality control and feature table construction
+
 nohup qiime dada2 denoise-single \
   --p-n-threads 16 \
   --i-demultiplexed-seqs trimmed-seqs-3.qza \
@@ -50,12 +56,14 @@ nohup qiime dada2 denoise-single \
   --o-denoising-stats stats-3.qza
 
 #visualizating stats-3.qza
+
 qiime metadata tabulate \
   --m-input-file stats-3.qza \
   --o-visualization stats-3.qzv
 
 # merge data
 #merge feature-table
+
 qiime feature-table merge \
   --i-tables table-1.qza \
   --i-tables table-2.qza \
