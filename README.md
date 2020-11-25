@@ -1,14 +1,13 @@
-# qiime2_test
-qiime2_test
 
-# Importing data:Multiplexed single-end FASTQ with barcodes in sequence
+# data processing
+#Multiplexed single-end FASTQ with barcodes in sequence
 qiime tools import \
   --type MultiplexedSingleEndBarcodeInSequence \
   --input-path PGM20161121.fastq.gz \
   --output-path multiplexed-seqs-3.qza
 
 
-# Demultiplex the reads
+#Demultiplex the reads
 qiime cutadapt demux-single \
   --i-seqs multiplexed-seqs-3.qza \
   --m-barcodes-file human_oral_3_m_map.txt \
@@ -18,13 +17,13 @@ qiime cutadapt demux-single \
   --o-untrimmed-sequences untrimmed-3.qza \
   --verbose
 
-# visualizating trimmed-seqs.qza
+#visualizating trimmed-seqs.qza
 qiime demux summarize \
   --i-data demultiplexed-seqs-3.qza \
   --o-visualization demultiplexed-seqs-3.qzv
 
 
-# Trim adapters+primers from demulitiplexed reads
+#Trim adapters+primers from demulitiplexed reads
 nohup qiime cutadapt trim-single \
   --i-demultiplexed-sequences demultiplexed-seqs-3.qza \
   --p-front GATGTGCCAGCMGCCGCGGTAA \
@@ -34,13 +33,13 @@ nohup qiime cutadapt trim-single \
   --verbose
 
 
-# visualizating trimmed-seqs.qza
+#visualizating trimmed-seqs.qza
 qiime demux summarize \
   --i-data trimmed-seqs-3.qza \
   --o-visualization trimmed-seqs-3.qzv
 
 
-# Sequence quality control and feature table construction
+#Sequence quality control and feature table construction
 nohup qiime dada2 denoise-single \
   --p-n-threads 16 \
   --i-demultiplexed-seqs trimmed-seqs-3.qza \
@@ -50,13 +49,13 @@ nohup qiime dada2 denoise-single \
   --o-table table-3.qza \
   --o-denoising-stats stats-3.qza
 
-# visualizating stats-3.qza
+#visualizating stats-3.qza
 qiime metadata tabulate \
   --m-input-file stats-3.qza \
   --o-visualization stats-3.qzv
 
-
-# merge feature-table
+# merge data
+#merge feature-table
 qiime feature-table merge \
   --i-tables table-1.qza \
   --i-tables table-2.qza \
@@ -106,12 +105,14 @@ qiime feature-table summarize \
   
   
 
-#axonomic analysis---SILVA_132_QIIME_release
+# taxonomic analysis
+
+#taxonomic analysis---SILVA_132_QIIME_release
 mkdir taxonomy
 cd taxonomy
 
-# assign taxonomy to features
-# Get SILVA database
+#assign taxonomy to features
+#Get SILVA database
 mkdir SILVA
 cd SILVA
 
@@ -120,26 +121,26 @@ unzip Silva_132_release.zip
 rm Silva_132_release.zip
 
 
-# Read database into QIIME2
+#Read database into QIIME2
 cd SILVA_132_QIIME_release
 
-# The sequences
+#The sequences
 qiime tools import \
 --type 'FeatureData[Sequence]' \
 --input-path rep_set/rep_set_16S_only/99/silva_132_99_16S.fna \
 --output-path 99_otus_16S.qza
 
-# The taxonomy strings
+#The taxonomy strings
 qiime tools import \
 --type 'FeatureData[Taxonomy]' \
 --input-format HeaderlessTSVTaxonomyFormat \
 --input-path taxonomy/16S_only/99/majority_taxonomy_7_levels \
 --output-path 99_otus_16S_taxonomy.qza
 
-# Extract the V3/V4 region from the reference database
-# --p-f-primer the primer on the left, 515F
-# --p-r-primer the primer on the right, 806R
-# --p-trunc-len  this value must be equal or less than the length of your trimed data
+#Extract the V3/V4 region from the reference database
+#--p-f-primer the primer on the left, 515F
+#--p-r-primer the primer on the right, 806R
+#--p-trunc-len  this value must be equal or less than the length of your trimed data
 qiime feature-classifier extract-reads \
 --i-sequences 99_otus_16S.qza \
 --p-f-primer GTGCCAGCMGCCGCGGTAA \
@@ -149,8 +150,8 @@ qiime feature-classifier extract-reads \
 --p-max-length 250 \
 --o-reads ref_seqs_16S_V3-V4-233.qza 
 
-# This produces the QIIME2 artifact ref_seqs_16S_V3-V4.qza; the V3/V4 reference sequences.
-# Train the classifier on this region
+#This produces the QIIME2 artifact ref_seqs_16S_V3-V4.qza; the V3/V4 reference sequences.
+#Train the classifier on this region
 nohup qiime feature-classifier fit-classifier-naive-bayes \
 --i-reference-reads ref_seqs_16S_V3-V4-233.qza \
 --i-reference-taxonomy 99_otus_16S_taxonomy.qza \
@@ -158,25 +159,25 @@ nohup qiime feature-classifier fit-classifier-naive-bayes \
 
 This step took a couple of hours. This produces the QIIME2 artifact classified_rep_seqs.qza.
 cd taxonomy_silva132
-# Classify rep seqs
+#Classify rep seqs
 nohup qiime feature-classifier classify-sklearn \
 --i-classifier taxonomy/classifier_16S_V3-V4-233.qza \
 --i-reads merge_data/rep-seqs.qza \
 --o-classification taxonomy/classified_rep_seqs-233.qza
 
-# Tabulate the features, their taxonomy and the confidence of taxonomy assignment
+#Tabulate the features, their taxonomy and the confidence of taxonomy assignment
 qiime metadata tabulate \
 --m-input-file classified_rep_seqs-233.qza \
 --o-visualization classified_rep_seqs-233.qzv
 
-# classified_rep_seqs barplot---table
+#classified_rep_seqs barplot---table
 qiime taxa barplot \
   --i-table merge_data/table.qza \
   --i-taxonomy taxonomy/classified_rep_seqs-233.qza \
   --m-metadata-file merge_data/merge_map.txt \
   --o-visualization taxonomy/taxabarplots_table1.qzv
 
-# classified_rep_seqs barplot---table2
+#classified_rep_seqs barplot---table2
 qiime taxa barplot \
   --i-table merge_data/table2.qza \
   --i-taxonomy taxonomy/classified_rep_seqs-233.qza \
@@ -209,8 +210,8 @@ qiime taxa barplot \
 
 
 
-
-# Generate a tree for phylogenetic diversity analyses
+# diversity analysis
+#Generate a tree for phylogenetic diversity analyses
 cd phylogenetictree
 qiime phylogeny align-to-tree-mafft-fasttree \
   --p-n-threads 16 \
@@ -220,7 +221,7 @@ qiime phylogeny align-to-tree-mafft-fasttree \
   --o-tree unrooted-tree.qza \
   --o-rooted-tree rooted-tree.qza
 
-# Alpha and beta diversity analysis---table
+#Alpha and beta diversity analysis---table
 qiime diversity core-metrics-phylogenetic \
   --i-phylogeny rooted-tree.qza \
   --i-table table.qza \
@@ -228,7 +229,7 @@ qiime diversity core-metrics-phylogenetic \
   --m-metadata-file merge_map.txt \
   --output-dir core-metrics-results-table
   
-# Alpha and beta diversity analysis---table2
+#Alpha and beta diversity analysis---table2
 qiime diversity core-metrics-phylogenetic \
   --i-phylogeny rooted-tree.qza \
   --i-table table2.qza \
@@ -236,7 +237,7 @@ qiime diversity core-metrics-phylogenetic \
   --m-metadata-file merge_map.txt \
   --output-dir core-metrics-results-table2
 
-# Alpha diversity analysis---faith
+#Alpha diversity analysis---faith
 qiime diversity alpha-group-significance \
   --i-alpha-diversity core-metrics-results-table2/faith_pd_vector.qza \
   --m-metadata-file merge_map.txt \
@@ -249,21 +250,20 @@ qiime diversity alpha-group-significance \
   --o-visualization core-metrics-results-table2/evenness-group-significance.qzv
 
 
-# Alpha diversity analysis---shannon
+#Alpha diversity analysis---shannon
 qiime diversity alpha-group-significance \
   --i-alpha-diversity core-metrics-results-table2/shannon_vector.qza \
   --m-metadata-file merge_map.txt \
   --o-visualization core-metrics-results-table2/shannon_vector.qzv
   
-# Alpha diversity analysis---observed
+#Alpha diversity analysis---observed
 qiime diversity alpha-group-significance \
   --i-alpha-diversity core-metrics-results-table2/observed_otus_vector.qza \
   --m-metadata-file merge_map.txt \
   --o-visualization core-metrics-results-table2/observed_otus_vector.qzv
 
 
-
-# Beta diversity analysis---Treatment
+#Beta diversity analysis---Treatment
 qiime diversity beta-group-significance \
   --i-distance-matrix core-metrics-results-table2/unweighted_unifrac_distance_matrix.qza \
   --m-metadata-file merge_map.txt \
@@ -271,7 +271,7 @@ qiime diversity beta-group-significance \
   --o-visualization core-metrics-results-table2/unweighted-unifrac-Treatment-significance.qzv \
   --p-pairwise
   
-# Beta diversity analysis---Description
+#Beta diversity analysis---Description
 qiime diversity beta-group-significance \
   --i-distance-matrix core-metrics-results-table2/unweighted_unifrac_distance_matrix.qza \
   --m-metadata-file merge_map.txt \
@@ -280,7 +280,7 @@ qiime diversity beta-group-significance \
   --p-pairwise
 
 
-# emperor
+#emperor
 qiime emperor plot \
   --i-pcoa core-metrics-results-table2/unweighted_unifrac_pcoa_results.qza \
   --m-metadata-file merge_map.txt \
@@ -293,7 +293,7 @@ qiime emperor plot \
   --o-visualization core-metrics-results-table2/bray-curtis-_pcoa_results.qzv
 
 
-# Alpha rarefaction plotting---table
+#Alpha rarefaction plotting---table
 qiime diversity alpha-rarefaction \
   --i-table table.qza \
   --i-phylogeny rooted-tree.qza \
@@ -301,7 +301,7 @@ qiime diversity alpha-rarefaction \
   --m-metadata-file merge_map.txt \
   --o-visualization alpha-rarefaction-table-48284.qzv
 
-# Alpha rarefaction plotting---table2
+#Alpha rarefaction plotting---table2
 qiime diversity alpha-rarefaction \
   --i-table table2.qza \
   --i-phylogeny rooted-tree.qza \
@@ -309,10 +309,11 @@ qiime diversity alpha-rarefaction \
   --m-metadata-file merge_map.txt \
   --o-visualization alpha-rarefaction-table2-51000.qzv
 
-
-# abundance analysis---ANCOM
+# abundance analysis
+#abundance analysis---ANCOM
 mkdir ANCOM
-# Collapse table at genus level
+
+#Collapse table at genus level
 nohup qiime taxa collapse \
 --i-table table2.qza \
 --i-taxonomy classified_rep_seqs-233.qza \
@@ -320,12 +321,12 @@ nohup qiime taxa collapse \
 --o-collapsed-table ANCOM/feature_table_for_ANCOM.qza
 
 cd ANCOM
-# Add pseudocount
+#Add pseudocount
 qiime composition add-pseudocount \
 --i-table feature_table_for_ANCOM.qza \
 --o-composition-table ANCOM_ready_table.qza
 
-# Run ANCOM 
+#Run ANCOM 
 nohup qiime composition ancom \
 --i-table ANCOM_ready_table.qza \
 --m-metadata-file merge_map.txt \
@@ -339,7 +340,7 @@ nohup qiime composition ancom \
 --o-visualization ancom_Description_results.qzv 
 
 
-# Differential abundance testing with ANCOM --- ND
+#Differential abundance testing with ANCOM --- ND
 qiime feature-table filter-samples \
   --i-table table2.qza \
   --m-metadata-file merge_map.txt \
@@ -374,7 +375,7 @@ qiime composition ancom \
   --o-visualization ANCOM/l6-ancom-ND-Description.qzv
 
 
-# Differential abundance testing with ANCOM --- D
+#Differential abundance testing with ANCOM --- D
 qiime feature-table filter-samples \
   --i-table table2.qza \
   --m-metadata-file merge_map.txt \
@@ -409,14 +410,14 @@ qiime composition ancom \
   --o-visualization ANCOM/l6-ancom-D-Description.qzv
 
 
-# abundance analysis---gneiss
+#abundance analysis---gneiss
 mkdir gneiss
-# Also check remaining read counts
+#Also check remaining read counts
 qiime feature-table summarize \
 --i-table table2.qza \
 --o-visualization gneiss/feature_table.qzv
 
-###Correlation-clustering
+#Correlation-clustering
 qiime gneiss correlation-clustering \
   --i-table table2.qza \
   --o-clustering gneiss/hierarchy.qza
@@ -452,7 +453,7 @@ qiime gneiss dendrogram-heatmap \
   --p-color-map seismic \
   --o-visualization gneiss/heatmap.qzv
 
-# plot a boxplot and identify taxa that could be explaining the differences between the D and ND groups.
+#plot a boxplot and identify taxa that could be explaining the differences between the D and ND groups.
 nohup qiime gneiss balance-taxonomy \
   --i-table table2.qza \
   --i-tree gneiss/hierarchy.qza \
@@ -496,24 +497,24 @@ biom convert \
 biom convert -h
 
 # small tips 
-# Count the number of sequences in a FASTQ file
+#Count the number of sequences in a FASTQ file
 grep -n filename.fastq
 
-# Count the total number of rows in a file that contain primers
+#Count the total number of rows in a file that contain primers
 grep -c ‘primer/barcode/adapter/’ filename.fastq
 
-# Count the total number of rows in a file
+#Count the total number of rows in a file
 wc -l filename.fastq
 
-# compress file
+#compress file
 gzip filename
 gzip -c filename
 
-# unzip file
+#unzip file
 gzip -d filename
 gunzip filename
 
-# check .fastq file
+#check .fastq file
 less -S -N filename.fastq
 zless -S -N filename.fastq.gz
 
