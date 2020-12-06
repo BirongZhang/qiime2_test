@@ -567,11 +567,11 @@ tail -n filename.fastq
 
 ############ abundance analysis---gneiss ########## 
   qiime gneiss correlation-clustering \
-  --i-table gneiss2/table500.qza \
+  --i-table table500.qza \
   --o-clustering gneiss2/hgneiss2/ierarchy.qza
   
 qiime gneiss ilr-transform \
-  --i-table gneiss2/table500.qza \
+  --i-table table500.qza \
   --i-tree gneiss2/hierarchy.qza \
   --o-balances gneiss2/balances.qza
 
@@ -631,11 +631,11 @@ qiime feature-table filter-features \
 ############ abundance analysis---gneiss ##########
 
 qiime gneiss correlation-clustering \
-  --i-table gneiss/table500.qza \
+  --i-table table500.qza \
   --o-clustering gneiss/hierarchy.qza
 
 qiime gneiss ilr-transform \
-  --i-table gneiss/table500.qza \
+  --i-table table500.qza \
   --i-tree gneiss/hierarchy.qza \
   --o-balances gneiss/balances.qza
 
