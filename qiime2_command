@@ -565,6 +565,62 @@ head -n filename.fastq
 tail -n filename.fastq
 
 
+############ abundance analysis---gneiss ##########
+
+# Also check remaining read counts
+qiime feature-table summarize \
+--i-table table2.qza \
+--o-visualization gneiss2/feature_table.qzv
+
+###Correlation-clustering
+qiime gneiss correlation-clustering \
+  --i-table table2.qza \
+  --o-clustering gneiss2/hierarchy.qza
+
+#computes the log ratios between groups at each node in the tree.
+qiime gneiss ilr-hierarchical \
+  --i-table table2.qza \
+  --i-tree gneiss2/hierarchy.qza \
+  --o-balances gneiss2/balances.qza
+
+#run linear regression on the balances
+qiime gneiss ols-regression \
+  --p-formula "Diabetes+Age+HLA_Risk_Group" \
+  --i-table gneiss2/balances.qza \
+  --i-tree gneiss2/hierarchy.qza \
+  --m-metadata-file new_metadata.tsv \
+  --o-visualization gneiss2/regression_summary_three factors.qzv
+
+
+#visualize these balances on a heatmap
+qiime gneiss dendrogram-heatmap \
+  --i-table table2.qza \
+  --i-tree gneiss2/hierarchy.qza \
+  --m-metadata-file new_metadata.tsv \
+  --m-metadata-column Diabetes \
+  --p-color-map seismic \
+  --o-visualization gneiss2/heatmap.qzv
+
+### plot a boxplot and identify taxa that could be explaining the differences between the D and ND groups.
+nohup qiime gneiss balance-taxonomy \
+  --i-table table2.qza \
+  --i-tree gneiss2/hierarchy.qza \
+  --i-taxonomy classified_rep_seqs-233.qza \
+  --p-taxa-level 2 \
+  --p-balance-name 'y0' \
+  --m-metadata-file new_metadata.tsv \
+  --m-metadata-column Diabetes \
+   --o-visualization gneiss2/y0_taxa_summary_lv2.qzv
+
+nohup qiime gneiss balance-taxonomy \
+  --i-table table2.qza \
+  --i-tree gneiss2/hierarchy.qza \
+  --i-taxonomy classified_rep_seqs-233.qza \
+  --p-taxa-level 6 \
+  --p-balance-name 'y0' \
+  --m-metadata-file new_metadata.tsv \
+  --m-metadata-column Diabetes \
+   --o-visualization gneiss2/y0_taxa_summary_lv6.qzv
 
 
 
