@@ -588,8 +588,16 @@ qiime gneiss ols-regression \
   --p-formula "Diabetes+Age+HLA_Risk_Group" \
   --i-table gneiss2/balances.qza \
   --i-tree gneiss2/hierarchy.qza \
-  --m-metadata-file new_metadata.tsv \
+  --m-metadata-file new_metadata.txt \
   --o-visualization gneiss2/regression_summary_three factors.qzv
+
+qiime gneiss ols-regression \
+  --p-formula "Diabetes+Age+HLA_Risk_Group" \
+  --i-table gneiss2/balances.qza \
+  --i-tree gneiss2/hiegneiss2/rarchy.qza \
+  --m-metadata-file new_metadata.txt \
+  --o-visualization gneiss2/regression_summary_three factors.qzv
+
 
 
 #visualize these balances on a heatmap
