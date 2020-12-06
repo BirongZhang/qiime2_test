@@ -565,18 +565,13 @@ head -n filename.fastq
 tail -n filename.fastq
 
 
-############ abundance analysis---gneiss ##########
-qiime gneiss add-pseudocount \
-  --i-table table500.qza \
-  --p-pseudocount 1 \
-  --o-composition-table gneiss2/composition.qza
-  
+############ abundance analysis---gneiss ########## 
   qiime gneiss correlation-clustering \
-  --i-table gneiss2/composition.qza \
+  --i-table gneiss2/table500.qza \
   --o-clustering gneiss2/hgneiss2/ierarchy.qza
   
 qiime gneiss ilr-transform \
-  --i-table gneiss2/composition.qza \
+  --i-table gneiss2/table500.qza \
   --i-tree gneiss2/hierarchy.qza \
   --o-balances gneiss2/balances.qza
 
@@ -634,18 +629,13 @@ qiime feature-table filter-features \
 
 
 ############ abundance analysis---gneiss ##########
-mkdir gneiss
-qiime gneiss add-pseudocount \
-  --i-table table500.qza \
-  --p-pseudocount 1 \
-  --o-composition-table gneiss/composition.qza
 
 qiime gneiss correlation-clustering \
-  --i-table gneiss/composition.qza \
+  --i-table gneiss/table500.qza \
   --o-clustering gneiss/hierarchy.qza
 
 qiime gneiss ilr-transform \
-  --i-table gneiss/composition.qza \
+  --i-table gneiss/table500.qza \
   --i-tree gneiss/hierarchy.qza \
   --o-balances gneiss/balances.qza
 
@@ -696,13 +686,35 @@ nohup qiime gneiss balance-taxonomy \
    --o-visualization gneiss/y0_taxa_summary_lv6.qzv
 
 
+mkdir gneiss500
+qiime gneiss gradient-clustering \
+    --i-table table500.qza \
+    --m-gradient-file merge_map.txt \
+    --m-gradient-category Treatment \
+    --o-clustering gneiss500/Treatment_tree.qza \
+    --p-weighted
 
 
+!qiime gneiss ilr-transform \
+    --i-table table500.qza \
+    --i-tree gneiss500/Treatment_tree.qza \
+    --o-balances gneiss500/Treatment_balances.qza
 
+!qiime gneiss lme-regression \
+    --p-formula "Treatment" \
+    --i-table gneiss500/Treatment_balances.qza \
+    --i-tree gneiss500/Treatment_tree.qza \
+    --m-metadata-file merge_map.txt \
+    --p-groups SampleID \
+    --o-visualization gneiss500/Treatment_linear_mixed_effects_model
 
-
-
-
-
-
+qiime gneiss balance-taxonomy \
+    --i-balances  gneiss500/Treatment_balances.qza \
+    --i-tree gneiss500/Treatment_tree.qza \
+    --i-taxonomy classified_rep_seqs-233.qza \
+    --p-taxa-level 4 \
+    --p-balance-name 'y2' \
+    --m-metadata-file 'merge_map.txt' \
+    --m-metadata-category 'Treatment' \
+    --o-visualization y2_taxa_summary_Treatment.qzv
 
