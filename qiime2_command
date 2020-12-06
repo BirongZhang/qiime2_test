@@ -590,6 +590,38 @@ qiime gneiss ols-regression \
   --i-tree gneiss2/hierarchy.qza \
   --m-metadata-file new_metadata.txt \
   --o-visualization gneiss2/regression_summary_threefactors.qzv
+  
+qiime gneiss dendrogram-heatmap \
+  --i-table table2.qza \
+  --i-tree gneiss2/hierarchy.qza \
+  --m-metadata-file new_metadata.txt \
+  --m-metadata-column Diabetes \
+  --p-color-map seismic \
+  --o-visualization gneiss2/heatmap.qzv
+
+qiime gneiss balance-taxonomy \
+  --i-table table2.qza \
+  --i-tree gneiss2/hierarchy.qza \
+  --i-taxonomy classified_rep_seqs-233.qza \
+  --p-taxa-level 2 \
+  --p-balance-name 'y0' \
+  --m-metadata-file new_metadata.txt \
+  --m-metadata-column Diabetes \
+  --o-visualization gneiss2/y0_taxa_summary-l2.qzv
+  
+  
+  qiime gneiss balance-taxonomy \
+  --i-table table2.qza \
+  --i-tree gneiss2/hierarchy.qza \
+  --i-taxonomy classified_rep_seqs-233.qza \
+  --p-taxa-level 6 \
+  --p-balance-name 'y0' \
+  --m-metadata-file new_metadata.txt \
+  --m-metadata-column Diabetes \
+  --o-visualization gneiss2/y0_taxa_summary-l6.qzv
+  
+  
+
 
 ### plot a boxplot and identify taxa that could be explaining the differences between the D and ND groups.
 nohup qiime gneiss balance-taxonomy \
