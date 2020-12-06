@@ -566,20 +566,17 @@ tail -n filename.fastq
 
 
 ############ abundance analysis---gneiss ##########
-
-# Also check remaining read counts
-qiime feature-table summarize \
---i-table table2.qza \
---o-visualization gneiss2/feature_table.qzv
-
-###Correlation-clustering
-qiime gneiss correlation-clustering \
+qiime gneiss add-pseudocount \
   --i-table table2.qza \
-  --o-clustering gneiss2/hierarchy.qza
-
-#computes the log ratios between groups at each node in the tree.
-qiime gneiss ilr-hierarchical \
-  --i-table table2.qza \
+  --p-pseudocount 1 \
+  --o-composition-table gneiss2/composition.qza
+  
+  qiime gneiss correlation-clustering \
+  --i-table gneiss2/composition.qza \
+  --o-clustering gneiss2/hgneiss2/ierarchy.qza
+  
+qiime gneiss ilr-transform \
+  --i-table gneiss2/composition.qza \
   --i-tree gneiss2/hierarchy.qza \
   --o-balances gneiss2/balances.qza
 
@@ -623,28 +620,77 @@ qiime gneiss balance-taxonomy \
   
 
 
+
+
+
+
+
+
+
+
+
+
+############ abundance analysis---gneiss ##########
+mkdir gneiss
+qiime gneiss add-pseudocount \
+  --i-table table.qza \
+  --p-pseudocount 1 \
+  --o-composition-table gneiss/composition.qza
+
+qiime gneiss correlation-clustering \
+  --i-table gneiss/composition.qza \
+  --o-clustering gneiss/hierarchy.qza
+
+qiime gneiss ilr-transform \
+  --i-table gneiss/composition.qza \
+  --i-tree gneiss/hierarchy.qza \
+  --o-balances gneiss/balances.qza
+
+#run linear regression on the balances
+qiime gneiss ols-regression \
+  --p-formula "Treatment" \
+  --i-table gneiss/balances.qza \
+  --i-tree gneiss/hierarchy.qza \
+  --m-metadata-file merge_map.txt \
+  --o-visualization gneiss/regression_summary_Treatment.qzv
+
+
+qiime gneiss ols-regression \
+  --p-formula "Description" \
+  --i-table gneiss/balances.qza \
+  --i-tree gneiss/hierarchy.qza \
+  --m-metadata-file merge_map.txt \
+  --o-visualization gneiss/regression_summary_Description.qzv
+
+#visualize these balances on a heatmap
+qiime gneiss dendrogram-heatmap \
+  --i-table table2.qza \
+  --i-tree gneiss/hierarchy.qza \
+  --m-metadata-file merge_map.txt \
+  --m-metadata-column Treatment \
+  --p-color-map seismic \
+  --o-visualization gneiss/heatmap.qzv
+
 ### plot a boxplot and identify taxa that could be explaining the differences between the D and ND groups.
 nohup qiime gneiss balance-taxonomy \
   --i-table table2.qza \
-  --i-tree gneiss2/hierarchy.qza \
+  --i-tree gneiss/hierarchy.qza \
   --i-taxonomy classified_rep_seqs-233.qza \
   --p-taxa-level 2 \
   --p-balance-name 'y0' \
-  --m-metadata-file new_metadata.txt \
-  --m-metadata-column Diabetes \
-   --o-visualization gneiss2/y0_taxa_summary_lv2.qzv
+  --m-metadata-file merge_map.txt \
+  --m-metadata-column Treatment \
+  --o-visualization gneiss/y0_taxa_summary_lv2.qzv
 
 nohup qiime gneiss balance-taxonomy \
   --i-table table2.qza \
-  --i-tree gneiss2/hierarchy.qza \
+  --i-tree gneiss/hierarchy.qza \
   --i-taxonomy classified_rep_seqs-233.qza \
   --p-taxa-level 6 \
   --p-balance-name 'y0' \
-  --m-metadata-file new_metadata.txt \
-  --m-metadata-column Diabetes \
-   --o-visualization gneiss2/y0_taxa_summary_lv6.qzv
-
-
+  --m-metadata-file merge_map.txt \
+  --m-metadata-column Treatment \
+   --o-visualization gneiss/y0_taxa_summary_lv6.qzv
 
 
 
