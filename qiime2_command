@@ -567,7 +567,7 @@ tail -n filename.fastq
 
 ############ abundance analysis---gneiss ##########
 qiime gneiss add-pseudocount \
-  --i-table table2.qza \
+  --i-table table500.qza \
   --p-pseudocount 1 \
   --o-composition-table gneiss2/composition.qza
   
@@ -589,7 +589,7 @@ qiime gneiss ols-regression \
   --o-visualization gneiss2/regression_summary_threefactors.qzv
   
 qiime gneiss dendrogram-heatmap \
-  --i-table table2.qza \
+  --i-table table500.qza \
   --i-tree gneiss2/hierarchy.qza \
   --m-metadata-file new_metadata.txt \
   --m-metadata-column Diabetes \
@@ -597,7 +597,7 @@ qiime gneiss dendrogram-heatmap \
   --o-visualization gneiss2/heatmap.qzv
 
 qiime gneiss balance-taxonomy \
-  --i-table table2.qza \
+  --i-table table500.qza \
   --i-tree gneiss2/hierarchy.qza \
   --i-taxonomy classified_rep_seqs-233.qza \
   --p-taxa-level 2 \
@@ -608,7 +608,7 @@ qiime gneiss balance-taxonomy \
   
   
   qiime gneiss balance-taxonomy \
-  --i-table table2.qza \
+  --i-table table500.qza \
   --i-tree gneiss2/hierarchy.qza \
   --i-taxonomy classified_rep_seqs-233.qza \
   --p-taxa-level 6 \
@@ -620,7 +620,10 @@ qiime gneiss balance-taxonomy \
   
 
 
-
+qiime feature-table filter-features \
+    --i-table table2.qza \
+    --o-filtered-table table500.qza \
+    --p-min-frequency 500
 
 
 
@@ -633,7 +636,7 @@ qiime gneiss balance-taxonomy \
 ############ abundance analysis---gneiss ##########
 mkdir gneiss
 qiime gneiss add-pseudocount \
-  --i-table table.qza \
+  --i-table table500.qza \
   --p-pseudocount 1 \
   --o-composition-table gneiss/composition.qza
 
@@ -664,7 +667,7 @@ qiime gneiss ols-regression \
 
 #visualize these balances on a heatmap
 qiime gneiss dendrogram-heatmap \
-  --i-table table2.qza \
+  --i-table table500.qza \
   --i-tree gneiss/hierarchy.qza \
   --m-metadata-file merge_map.txt \
   --m-metadata-column Treatment \
@@ -673,7 +676,7 @@ qiime gneiss dendrogram-heatmap \
 
 ### plot a boxplot and identify taxa that could be explaining the differences between the D and ND groups.
 nohup qiime gneiss balance-taxonomy \
-  --i-table table2.qza \
+  --i-table table500.qza \
   --i-tree gneiss/hierarchy.qza \
   --i-taxonomy classified_rep_seqs-233.qza \
   --p-taxa-level 2 \
@@ -683,7 +686,7 @@ nohup qiime gneiss balance-taxonomy \
   --o-visualization gneiss/y0_taxa_summary_lv2.qzv
 
 nohup qiime gneiss balance-taxonomy \
-  --i-table table2.qza \
+  --i-table table500.qza \
   --i-tree gneiss/hierarchy.qza \
   --i-taxonomy classified_rep_seqs-233.qza \
   --p-taxa-level 6 \
