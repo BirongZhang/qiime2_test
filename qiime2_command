@@ -361,7 +361,7 @@ qiime diversity alpha-rarefaction \
 
 
 ######################################################### composition abundance analysis ########################################################
-############ANCOM##########
+############ ANCOM ##########
 mkdir ANCOM
 
 # ANCOM for original otu_table---table2
@@ -438,13 +438,13 @@ qiime gneiss correlation-clustering \
   --i-table table2.qza \
   --o-clustering gneiss/hierarchy.qza
 
-#computes the log ratios between groups at each node in the tree.
+# computes the log ratios between groups at each node in the tree.
 qiime gneiss ilr-hierarchical \
   --i-table table2.qza \
   --i-tree gneiss/hierarchy.qza \
   --o-balances gneiss/balances.qza
 
-#run linear regression on the balances
+# run linear regression on the balances
 qiime gneiss ols-regression \
   --p-formula "Treatment" \
   --i-table gneiss/balances.qza \
@@ -467,7 +467,7 @@ qiime gneiss ols-regression \
   --m-metadata-file merge_map.txt \
   --o-visualization gneiss/regression_summary_Description.qzv
 
-#visualize these balances on a heatmap
+# visualize these balances on a heatmap
 qiime gneiss dendrogram-heatmap \
   --i-table table2.qza \
   --i-tree gneiss/hierarchy.qza \
@@ -477,7 +477,7 @@ qiime gneiss dendrogram-heatmap \
   --o-visualization gneiss/heatmap.qzv
 
 ### plot a boxplot and identify taxa that could be explaining the differences between the D and ND groups.
-nohup qiime gneiss balance-taxonomy \
+qiime gneiss balance-taxonomy \
   --i-table table2.qza \
   --i-tree gneiss/hierarchy.qza \
   --i-taxonomy classified_rep_seqs-233.qza \
@@ -548,6 +548,29 @@ zcat filename.fastq.gz | head -n 10
 head -n filename.fastq
 tail -n filename.fastq
 
+
+
+
+biom add-metadata \
+-i exported/feature-table.biom \
+-o table-with-taxonomy.biom \
+--observation-metadata-fp exported/taxonomy.tsv \
+--observation-header taxonomy \
+--sc-separated taxonomy
+
+
+biom convert \
+-i table-with-taxonomy.biom \
+-o table-with-taxonomy.tsv \
+--to-tsv \
+--header-key taxonomy
+
+
+biom add-metadata \
+-i feature-table.biom \
+-o table- with -taxonomy.biom \
+–-observation-metadata-fp biom-taxonomy.tsv \
+--sc-separated taxonomy
 ######################################################### reference ########################################################
 https://docs.qiime2.org/2020.8/tutorials/moving-pictures/
 https://docs.qiime2.org/2020.8/plugins/
