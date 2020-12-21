@@ -1,0 +1,147 @@
+######################## qiime2-picrust2 #########################
+module load qiime2/2019.10-picrust2
+
+
+nohup qiime picrust2 full-pipeline \
+   --i-table table_minfrequency10_minsamples2.qza \
+   --i-seq rep-seqs.qza \
+   --output-dir q2-picrust2_output \
+   --p-threads 16 \
+   --p-hsp-method pic \
+   --p-max-nsti 2
+
+qiime feature-table summarize \
+   --i-table q2-picrust2_output/pathway_abundance.qza \
+   --o-visualization q2-picrust2_output/pathway_abundance.qzv
+
+qiime diversity core-metrics \
+   --i-table q2-picrust2_output/pathway_abundance.qza \
+   --p-sampling-depth 816827  \
+   --m-metadata-file merge_map.txt \
+   --output-dir pathabun_core_metrics_out \
+   --p-n-jobs 1
+
+
+qiime tools export \
+   --input-path q2-picrust2_output/pathway_abundance.qza \
+   --output-path pathabun_exported
+
+
+biom convert \
+   -i pathabun_exported/feature-table.biom \
+   -o pathabun_exported/feature-table.biom.tsv \
+   --to-tsv
+
+
+# ko_metagenome Filter
+mkdir ko
+cd ko
+
+qiime feature-table filter-features \
+--i-table ko_metagenome.qza \
+--p-min-frequency 10000 \
+--o-filtered-table ko_metagenome_minfrequency10000.qza
+
+qiime feature-table filter-features \
+--i-table ko_metagenome_minfrequency10000.qza \
+--p-min-samples 170 \
+--o-filtered-table ko_metagenome_minfrequency10000_minsamples170.qza
+
+qiime feature-table summarize \
+  --i-table ko_metagenome_minfrequency10000_minsamples170.qza \
+  --o-visualization ko_metagenome_minfrequency10000_minsamples170.qzv 
+
+qiime tools extract \
+--input-path  ko_metagenome_minfrequency10000_minsamples170.qza \
+--output-path  ko_metagenome_minfrequency10000_minsamples170
+
+
+
+# ec_metagenome Filter
+cd ec
+
+qiime feature-table filter-features \
+--i-table ec_metagenome.qza \
+--p-min-frequency 10000 \
+--o-filtered-table ec_metagenome_minfrequency10000.qza
+
+qiime feature-table filter-features \
+--i-table ec_metagenome_minfrequency10000.qza \
+--p-min-samples 170 \
+--o-filtered-table ec_metagenome_minfrequency10000_minsamples170.qza
+
+qiime feature-table summarize \
+  --i-table ec_metagenome_minfrequency10000_minsamples170.qza \
+  --o-visualization ec_metagenome_minfrequency10000_minsamples170.qzv 
+
+
+qiime tools extract \
+--input-path  ec_metagenome_minfrequency10000_minsamples170.qza \
+--output-path  ec_metagenome_minfrequency10000_minsamples170
+
+
+qiime tools extract \
+--input-path  ec_metagenome.qza \
+--output-path  ec_metagenome
+
+
+
+ biom convert \
+-i ec_metagenome_minfrequency10000_minsamples170/65f083ca-7668-4712-9cb5-f3f95d216fc3/data/feature-table.biom \
+-o feature-tableec_metagenome_minfrequency10000_minsamples170.tsv \
+--to-tsv
+
+
+# pathway_abundance Filter
+cd pathway
+
+qiime feature-table filter-features \
+--i-table pathway_abundance.qza \
+--p-min-frequency 10000 \
+--o-filtered-table pathway_abundance_minfrequency10000.qza
+
+qiime feature-table filter-features \
+--i-table pathway_abundance_minfrequency10000.qza \
+--p-min-samples 170 \
+--o-filtered-table pathway_abundance_minfrequency10000_minsamples170.qza
+
+qiime feature-table summarize \
+  --i-table pathway_abundance_minfrequency10000_minsamples170.qza \
+  --o-visualization pathway_abundance_minfrequency10000_minsamples170.qzv 
+
+qiime tools extract \
+--input-path  pathway_abundance_minfrequency10000_minsamples170.qza \
+--output-path  pathway_abundance_minfrequency10000_minsamples170
+
+
+
+######################## picrust2 #########################
+picrust2_pipeline.py \
+-s dna-sequences.fasta \
+-i feature-table.biom \
+-o picrust2_out_pipeline \
+-p 1
+
+
+
+add_descriptions.py \
+ -i EC_metagenome_out/pred_metagenome_unstrat.tsv.gz -m EC \
+-o EC_metagenome_out/pred_metagenome_unstrat_descrip.tsv.gz
+
+add_descriptions.py \
+-i KO_metagenome_out/pred_metagenome_unstrat.tsv.gz -m KO \
+-o KO_metagenome_out/pred_metagenome_unstrat_descrip.tsv.gz
+
+add_descriptions.py \
+-i pathways_out/path_abun_unstrat.tsv.gz -m METACYC \
+-o pathways_out/path_abun_unstrat_descrip.tsv.gz
+
+
+######################## reference #########################
+https://github.com/picrust/picrust2/wiki/Workflow
+https://github.com/picrust/picrust2/wiki/PICRUSt2-Tutorial-(v2.3.0-beta)#add-functional-descriptions
+https://forum.qiime2.org/t/analysis-of-qiime2-picrust2-plugin-output/13392
+https://forum.qiime2.org/t/why-picrust2-ko-metagenome-prediction-generates-non-integer-result/13105
+https://forum.qiime2.org/t/picrust2-pathway-abundance-output-ids-translated-into-actual-pathway-names/16298/2
+https://www.genome.jp/kegg/
+https://github.com/picrust/picrust2/wiki/q2-picrust2-Tutorial
