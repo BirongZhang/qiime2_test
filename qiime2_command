@@ -572,6 +572,8 @@ biom add-metadata \
 –-observation-metadata-fp biom-taxonomy.tsv \
 --sc-separated taxonomy
 ######################################################### reference ########################################################
+
+#https://docs.qiime2.org
 https://docs.qiime2.org/2020.8/tutorials/moving-pictures/
 https://docs.qiime2.org/2020.8/plugins/
 https://docs.qiime2.org/2020.8/tutorials/importing/
@@ -584,12 +586,16 @@ https://rachaellappan.github.io/16S-analysis/pre-processing-reads.html
 https://github.com/mikerobeson/make_SILVA_db
 https://github.com/lokeshbio/Amplicon_course/blob/master/Qiime2_pipeline.md#emp-format
 
-cutadapt
+
+
+#cutadapt
 https://cutadapt.readthedocs.io/en/stable/guide.html#multiple-adapters
 https://forum.qiime2.org/t/demultiplexing-and-trimming-adapters-from-reads-with-q2-cutadapt/2313
 https://www.jianshu.com/p/9451bab60e47
 
-qiime2 forum Q&A
+
+
+#qiime2 forum Q&A
 https://forum.qiime2.org/t/dada2-truncation-lengths-and-features-number/1940
 https://docs.qiime2.org/2020.8/tutorials/read-joining/
 https://forum.qiime2.org/t/trimming-joined-reads-with-cutadapt/16621/2
@@ -607,9 +613,13 @@ https://forum.qiime2.org/t/add-figaro-tool-to-optimize-trimming-truncating-param
 https://forum.qiime2.org/t/tutorial-integrating-qiime2-and-r-for-data-visualization-and-analysis-using-qiime2r/4121
 https://forum.qiime2.org/t/final-otu-tables-with-dna-sequences-included/16035
 https://forum.qiime2.org/t/merging-taxonomy-assignment-table-with-rarefied-feature-table/15963/3
+https://forum.qiime2.org/t/final-otu-tables-with-dna-sequences-included/16035/5
+https://forum.qiime2.org/t/merging-taxonomy-assignment-table-with-rarefied-feature-table/15963/10
+https://forum.qiime2.org/t/biom-add-metadata-problem/8302/22
 
 
-Chinese tutorial
+
+#Chinese tutorial
 https://forum.qiime2.org/t/qiime-2-3-2018-11/7599
 https://zhuanlan.zhihu.com/p/93186419
 https://blog.csdn.net/woodcorpse/article/details/76944391?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param
