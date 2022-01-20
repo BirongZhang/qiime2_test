@@ -1,4 +1,5 @@
 # data processing ########################################################
+```
 #Importing data:Multiplexed single-end FASTQ with barcodes in sequence
 
 qiime tools import \
@@ -90,10 +91,11 @@ qiime feature-table summarize \
 qiime feature-table tabulate-seqs \
 --i-data rep-seqs.qza \
 --o-visualization rep_seqs.qzv
-
+```
 
 
 # data filtering ########################################################
+```
 #Filter features that only appear in a single sample
 
 qiime feature-table filter-features \
@@ -228,9 +230,10 @@ qiime taxa barplot \
   --i-taxonomy taxonomy.qza \
   --m-metadata-file merge_map.txt \
   --o-visualization taxa-bar-plots.qzv
+```
 
 # Collapse table at different level #####################################################
-
+```
 mkdir collapse
 
 #Collapse table at phylum level
@@ -283,8 +286,10 @@ biom convert \
 -i collapse/feature_table_level6/4e6797a1-cb88-472e-a906-798e8ff496ab/data/feature-table.biom \
 -o lcollapse/feature_table_level6.tsv \
 --to-tsv
+```
 
 # diversity analysis ##################################################
+```
 #Generate a tree for phylogenetic diversity analyses
 
 qiime phylogeny align-to-tree-mafft-fasttree \
@@ -398,10 +403,11 @@ qiime diversity alpha-rarefaction \
   --p-max-depth 51000\
   --m-metadata-file merge_map.txt \
   --o-visualization alpha-rarefaction-table2-51000.qzv
-
+```
 
 
 # composition abundance analysis ########################################################
+```
 # ANCOM ##########
 mkdir ANCOM
 
@@ -418,10 +424,6 @@ qiime composition ancom \
   --m-metadata-file merge_map.txt \
   --m-metadata-column Treatment \
   --o-visualization ANCOM/ancom-Treatment-table2.qzv
-
-
-
-
 
 
 #Differential abundance testing with ANCOM --- Treatment="ND"~Sex
@@ -441,8 +443,6 @@ nohup qiime composition ancom \
   --m-metadata-file merge_map.txt  \
   --m-metadata-column Description \
   --o-visualization ANCOM/ancom-ND-Description.qzv
-
-
 
 
 #Differential abundance testing with ANCOM --- Treatment="D"~Sex
@@ -554,9 +554,10 @@ nohup qiime gneiss balance-taxonomy \
   --m-metadata-file merge_map.txt \
   --m-metadata-column Treatment \
    --o-visualization gneiss/y0_taxa_summary_lv6.qzv
-
+```
 
 # data extraction ########################################################
+```
 qiime tools extract \
 --input-path rooted_tree.qza \
 --output-path rooted_tree
@@ -568,8 +569,10 @@ qiime tools extract \
 qiime tools extract \
 --input-path table.qza \
 --output-path table
+```
 
 # data conversion  ###############################
+```
 biom convert \
 -i table2/9c40c08e-45c1-405c-bc41-27c3e05025c5/data/feature-table.biom \
 -o table2/out_table.tsv \
@@ -622,7 +625,6 @@ biom add-metadata \
 --observation-header taxonomy \
 --sc-separated taxonomy
 
-
 biom convert \
 -i table-with-taxonomy.biom \
 -o table-with-taxonomy.tsv \
@@ -635,3 +637,4 @@ biom add-metadata \
 -o table- with -taxonomy.biom \
 –-observation-metadata-fp biom-taxonomy.tsv \
 --sc-separated taxonomy
+```
